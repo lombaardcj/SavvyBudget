@@ -57,7 +57,7 @@ def create_transaction(db: Session, transaction: schemas.TransactionCreate, enve
     envelope = get_envelope(db, envelope_id, user_id)
     if not envelope:
         return None
-    db_transaction = models.Transaction(**transaction.dict(), envelope_id=envelope_id)
+    db_transaction = models.Transaction(**transaction.model_dump(), envelope_id=envelope_id)
     db.add(db_transaction)
     db.commit()
     db.refresh(db_transaction)
@@ -66,7 +66,7 @@ def create_transaction(db: Session, transaction: schemas.TransactionCreate, enve
 def update_transaction(db: Session, transaction_id: int, transaction: schemas.TransactionCreate, envelope_id: int, user_id: int) -> Optional[models.Transaction]:
     db_transaction = db.query(models.Transaction).join(models.Envelope).filter(models.Transaction.id == transaction_id, models.Envelope.id == envelope_id, models.Envelope.user_id == user_id).first()
     if db_transaction:
-        for key, value in transaction.dict().items():
+        for key, value in transaction.model_dump().items():
             setattr(db_transaction, key, value)
         db.commit()
         db.refresh(db_transaction)
