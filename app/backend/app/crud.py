@@ -22,7 +22,7 @@ def get_envelope(db: Session, envelope_id: int, user_id: int) -> Optional[models
     return db.query(models.Envelope).filter(models.Envelope.id == envelope_id, models.Envelope.user_id == user_id).first()
 
 def create_envelope(db: Session, envelope: schemas.EnvelopeCreate, user_id: int) -> models.Envelope:
-    db_envelope = models.Envelope(**envelope.dict(), user_id=user_id)
+    db_envelope = models.Envelope(**envelope.model_dump(), user_id=user_id)
     db.add(db_envelope)
     db.commit()
     db.refresh(db_envelope)
@@ -31,7 +31,7 @@ def create_envelope(db: Session, envelope: schemas.EnvelopeCreate, user_id: int)
 def update_envelope(db: Session, envelope_id: int, envelope: schemas.EnvelopeCreate, user_id: int) -> Optional[models.Envelope]:
     db_envelope = get_envelope(db, envelope_id, user_id)
     if db_envelope:
-        for key, value in envelope.dict().items():
+        for key, value in envelope.model_dump().items():
             setattr(db_envelope, key, value)
         db.commit()
         db.refresh(db_envelope)

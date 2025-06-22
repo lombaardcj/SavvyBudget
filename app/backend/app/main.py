@@ -7,7 +7,15 @@ from typing import List, Optional
 from .database import SessionLocal, init_db
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app):
+    init_db()
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 origins = [
     "*"
@@ -19,10 +27,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@app.on_event("startup")
-def on_startup():
-    init_db()
 
 def get_db():
     db = SessionLocal()
@@ -68,7 +72,12 @@ def get_envelope(envelope_id: int, current_user: models.User = Depends(get_curre
 
 @app.post("/envelopes", response_model=schemas.Envelope)
 def create_envelope(envelope: schemas.EnvelopeCreate, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
-    return crud.create_envelope(db, envelope, user_id=current_user.id)
+    from sqlalchemy.exc import IntegrityError
+    try:
+        return crud.create_envelope(db, envelope, user_id=current_user.id)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Envelope name must be unique for this user.")
 
 @app.put("/envelopes/{envelope_id}", response_model=schemas.Envelope)
 def update_envelope(envelope_id: int, envelope: schemas.EnvelopeCreate, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship, declarative_base
 from datetime import datetime
 
@@ -18,6 +18,10 @@ class Envelope(Base):
     description = Column(String, nullable=True)
     color = Column(String, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    __table_args__ = (
+        # Enforce unique envelope name per user
+        UniqueConstraint('user_id', 'name', name='uq_user_envelope_name'),
+    )
     owner = relationship("User", back_populates="envelopes")
     transactions = relationship("Transaction", back_populates="envelope", cascade="all, delete-orphan")
 

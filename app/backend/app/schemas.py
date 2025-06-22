@@ -13,8 +13,7 @@ class TransactionCreate(TransactionBase):
 class Transaction(TransactionBase):
     id: int
     envelope_id: int
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 class EnvelopeBase(BaseModel):
     name: str
@@ -28,8 +27,7 @@ class Envelope(EnvelopeBase):
     id: int
     user_id: int
     transactions: List[Transaction] = []
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 class UserBase(BaseModel):
     username: str
@@ -40,5 +38,4 @@ class UserCreate(UserBase):
 class User(UserBase):
     id: int
     envelopes: List[Envelope] = []
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
