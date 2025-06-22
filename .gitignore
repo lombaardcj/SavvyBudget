@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pdb
+*.egg-info/
+*.egg
+*.log
+*.sqlite3
+*.db
+*.env
+.env.*
+venv/
+backend-venv/
+
+# FastAPI/SQLAlchemy
+instance/
+*.db
+*.sqlite
+
+# SvelteKit/Node
+node_modules/
+dist/
+build/
+.svelte-kit/
+.vite/
+*.log
+*.tsbuildinfo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VSCode
+.vscode/
+
+# Misc
+*.swp
+*.bak
+*.tmp
+
+# Ignore SQLite DBs in backend
+backend/app/*.db
+backend/app/*.sqlite

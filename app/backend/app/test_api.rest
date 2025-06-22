@@ -1,0 +1,74 @@
+### SavvyBudget API Test Suite (REST Client)
+# Health Check
+GET http://localhost:8000/health
+Accept: application/json
+
+### Register a User
+POST http://localhost:8000/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "testpass123"
+}
+
+### Login (Obtain JWT Token)
+POST http://localhost:8000/token
+Content-Type: application/x-www-form-urlencoded
+
+username=testuser&password=testpass123
+###
+### Save access_token from Login response
+@access_token = {{response.body.access_token}}
+
+
+### List Envelopes (Requires Auth)
+GET http://localhost:8000/envelopes
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Create Envelope (Requires Auth)
+POST http://localhost:8000/envelopes
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Groceries",
+  "description": "Weekly groceries",
+  "color": "#38bdf8"
+}
+
+### Update Envelope (Requires Auth)
+PUT http://localhost:8000/envelopes/1
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Groceries Updated",
+  "description": "Updated description",
+  "color": "#22d3ee"
+}
+
+### Delete Envelope (Requires Auth)
+DELETE http://localhost:8000/envelopes/1
+Authorization: Bearer {{access_token}}
+
+### List Transactions (Requires Auth)
+GET http://localhost:8000/envelopes/1/transactions
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Create Transaction (Requires Auth)
+POST http://localhost:8000/envelopes/1/transactions
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "amount": 50,
+  "date": "2025-06-22T00:00:00",
+  "description": "Grocery shopping"
+}
+
+### Delete Transaction (Requires Auth)
+DELETE http://localhost:8000/envelopes/1/transactions/1
+Authorization: Bearer {{access_token}}
